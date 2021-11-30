@@ -1,0 +1,6 @@
+# allows you to add more field to the fragment everywhere else it is used by just changing this
+
+fragment RegularUser on User {
+  id
+  username
+}
