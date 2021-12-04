@@ -120,12 +120,12 @@ import NextLink from "next/link";
 import { EditDeletePostButtons } from "../components/EditDeletePostButtons";
 import { Layout } from "../components/Layout";
 import { UpdootSection } from "../components/UpdootSection";
-import { usePostsQuery } from "../generated/graphql";
+import { useMeQuery, usePostsQuery } from "../generated/graphql";
 import { useIsAuth } from "../utils/useIsAuth";
 import { withApollo } from "../utils/withApollo";
 
 const Index: React.FC = () => {
-  // const { data: meData } = useMeQuery();
+  const { data: meData } = useMeQuery();
   useIsAuth();
 
   const { data, error, loading, fetchMore, variables } = usePostsQuery({
@@ -148,20 +148,22 @@ const Index: React.FC = () => {
   return (
     <Layout>
       {!data && loading ? (
-        <div>loading...maybe you need to login?</div>
+        <div>loading...maybe you need to post?</div>
       ) : (
         <Stack spacing={8}>
           {data!.posts.posts.map((p) =>
-            !p ? null : (
+            !p || p.creator.id != meData?.me?.id ? null : (
+              // console.log("hello");
               <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
                 <UpdootSection post={p} />
+                {/* if (p.creator === p.creator.id){ */}
                 <Box flex={1}>
                   <NextLink href="/post/[id]" as={`/post/${p.id}`}>
                     <Link>
                       <Heading fontSize="xl">{p.title}</Heading>
                     </Link>
                   </NextLink>
-                  <Text>posted by {p.creator.username}</Text>
+                  <Text>made by {p.creator.username}</Text>
                   <Flex align="center">
                     <Text flex={1} mt={4}>
                       {p.textSnippet}
@@ -174,11 +176,13 @@ const Index: React.FC = () => {
                     </Box>
                   </Flex>
                 </Box>
+                {/* // } */}
               </Flex>
             )
           )}
         </Stack>
       )}
+
       {data && data.posts.hasMore ? (
         <Flex>
           <Button
