@@ -1138,10 +1138,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.5.tgz#2c40f81449a4e554e9fc6396910ed4843ec2be50"
   integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
 
-"@emotion/react@^11.0.0":
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.6.0.tgz#61fcb95c1e01255734c2c721cb9beabcf521eb0f"
-  integrity sha512-23MnRZFBN9+D1lHXC5pD6z4X9yhPxxtHr6f+iTGz6Fv6Rda0GdefPrsHL7otsEf+//7uqCdT5QtHeRxHCERzuw==
+"@emotion/react@^11.7.0":
+  version "11.7.0"
+  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.7.0.tgz#b179da970ac0e8415de3ac165deadf8d9c4bf89f"
+  integrity sha512-WL93hf9+/2s3cA1JVJlz8+Uy6p6QWukqQFOm2OZO5ki51hfucHMOmbSjiyC3t2Y4RI8XUmBoepoc/24ny/VBbA==
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@emotion/cache" "^11.6.0"
@@ -1289,6 +1289,17 @@
     "@graphql-codegen/typescript" "^2.4.1"
     "@graphql-codegen/visitor-plugin-common" "2.5.1"
     auto-bind "~4.0.0"
+    tslib "~2.3.0"
+
+"@graphql-codegen/typescript-react-apollo@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-react-apollo/-/typescript-react-apollo-3.2.2.tgz#d17301f5c0e5b9bb719de187861b06633e32f9fb"
+  integrity sha512-5bAWTaQlc274cxUT3Quc13tIDIXuU3BnzXsm28egQUof+UbzQKn5TDt+wPxVYXPQeAj8ti+Ak5Af5Ql7/zeddw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.3.0"
+    "@graphql-codegen/visitor-plugin-common" "2.5.1"
+    auto-bind "~4.0.0"
+    change-case-all "1.0.14"
     tslib "~2.3.0"
 
 "@graphql-codegen/typescript-urql@^3.4.1":
@@ -4283,6 +4294,11 @@ nanoid@^3.1.23:
   version "3.1.30"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
   integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==
+
+next-apollo@^5.0.7:
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/next-apollo/-/next-apollo-5.0.7.tgz#1bcdf54120c3830365870c17a4493c354e303e2f"
+  integrity sha512-W+IZDonH1nSOCQGDHp/3GU+ZhXQ7lRi/o5GEdywyVaDBCgG8FOpFp4nymLUylJn88f7mfouD/MvO3Uu5EqwKjA==
 
 next-urql@^3.3.0:
   version "3.3.0"

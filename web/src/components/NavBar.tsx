@@ -5,33 +5,35 @@ import NextLink from "next/link";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { useRouter } from "next/router";
+import { useApolloClient } from "@apollo/client";
 
 interface NavBarProps {}
 
 export const NavBar: React.FC<NavBarProps> = ({}) => {
   const router = useRouter();
-  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
-  const [{ data, fetching }] = useMeQuery({
-    pause: isServer(),
+  const [logout, { loading: logoutFetching }] = useLogoutMutation();
+  const apolloClient = useApolloClient();
+  const { data, loading } = useMeQuery({
+    skip: isServer(),
   });
   let body = null;
 
   {
     /* // data is loading */
   }
-  if (fetching) {
+  if (loading) {
     // user is not logged in
   } else if (!data?.me) {
     body = (
       <>
         <NextLink href="/login">
           {/* // adds client side routing */}
-          <Link color="white" mr={2}>
+          <Link color="black" mr={2}>
             Login
           </Link>
         </NextLink>
         <NextLink href="/register">
-          <Link color="white">Register</Link>
+          <Link color="black">Register</Link>
         </NextLink>
       </>
     );
@@ -40,20 +42,21 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
     body = (
       <Flex align="center">
         <NextLink href="/create-post">
-          <Button color="white" as={Link} mr={4}>
-            create post
+          <Button color="black" as={Link} mr={4}>
+            new note
           </Button>
         </NextLink>
-        <Box mr={2} color="white">
+        <Box mr={2} color="black">
           {data.me.username}
         </Box>
         <Button
           variant="link"
           onClick={async () => {
             await logout();
-            router.reload();
+            await apolloClient.resetStore();
           }}
           isLoading={logoutFetching}
+          color="black"
         >
           Logout
         </Button>
@@ -63,18 +66,11 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
   // testing comment for git
 
   return (
-    <Flex
-      zIndex={2}
-      position="sticky"
-      top={0}
-      bg="gray.800"
-      p={4}
-      align="center"
-    >
+    <Flex zIndex={2} position="sticky" top={0} bg="white" p={4} align="center">
       <Flex flex={1} m="auto" align="center" maxW={800}>
         <NextLink href="/">
           <Link>
-            <Heading color="white">NEXTNOTE</Heading>
+            <Heading color="black">NEXTNOTE</Heading>
           </Link>
         </NextLink>
         <Box ml={"auto"}>{body}</Box>

@@ -1,24 +1,21 @@
 import React from "react";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
-import { useRouter } from "next/router";
-import { usePostQuery } from "../../generated/graphql";
+// import { useRouter } from "next/router";
+// import { usePostQuery } from "../../generated/graphql";
 import { Layout } from "../../components/Layout";
 import { Heading, Box } from "@chakra-ui/react";
 import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
+import { useGetPostFromUrl } from "../../utils/useGetPostFromUrl";
+import { withApollo } from "../../utils/withApollo";
 
 const Post = ({}) => {
-  const router = useRouter();
-  const intId =
-    typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
-  const [{ data, error, fetching }] = usePostQuery({
-    pause: intId === -1,
-    variables: {
-      id: intId,
-    },
-  });
+  // const router = useRouter();
+  // const intId =
+  //   typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
+  const { data, error, loading } = useGetPostFromUrl();
 
-  if (fetching) {
+  if (loading) {
     return (
       <Layout>
         <div>loading...</div>
@@ -50,4 +47,4 @@ const Post = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default withApollo({ ssr: true })(Post);
