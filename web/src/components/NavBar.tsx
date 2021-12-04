@@ -46,7 +46,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
             new note
           </Button>
         </NextLink>
-        <Box mr={2} color="black">
+        <Box mr={4} color="black" textStyle="h1">
           {data.me.username}
         </Box>
         <Button
@@ -70,7 +70,9 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
       <Flex flex={1} m="auto" align="center" maxW={800}>
         <NextLink href="/">
           <Link>
-            <Heading color="black">NEXTNOTE</Heading>
+            <Heading fontSize="20px" color="black">
+              NEXTNOTE
+            </Heading>
           </Link>
         </NextLink>
         <Box ml={"auto"}>{body}</Box>
