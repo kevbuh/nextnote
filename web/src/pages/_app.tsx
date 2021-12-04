@@ -26,7 +26,7 @@ const theme = extendTheme({
       // letterSpacing: "-2%",
     },
     h2: {
-      fontSize: ["36px", "48px"],
+      fontSize: ["26px", "28px"],
       fontWeight: "semibold",
       lineHeight: "110%",
       letterSpacing: "-1%",

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,8 +32,8 @@ const path_1 = __importDefault(require("path"));
 const Updoot_1 = require("./entities/Updoot");
 const createUserLoader_1 = require("./utils/createUserLoader");
 const createUpdootLoader_1 = require("./utils/createUpdootLoader");
-const main = async () => {
-    const conn = await (0, typeorm_1.createConnection)({
+const main = () => __awaiter(void 0, void 0, void 0, function* () {
+    const conn = yield (0, typeorm_1.createConnection)({
         type: "postgres",
         url: process.env.DATABASE_URL,
         logging: true,
@@ -57,7 +66,7 @@ const main = async () => {
         resave: false,
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
-        schema: await (0, type_graphql_1.buildSchema)({
+        schema: yield (0, type_graphql_1.buildSchema)({
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
@@ -69,7 +78,7 @@ const main = async () => {
             updootLoader: (0, createUpdootLoader_1.createUpdootLoader)(),
         }),
     });
-    await apolloServer.start();
+    yield apolloServer.start();
     apolloServer.applyMiddleware({
         app,
         cors: false,
@@ -77,7 +86,7 @@ const main = async () => {
     app.listen(parseInt(process.env.PORT), () => {
         console.log("server started on localhost:4000");
     });
-};
+});
 main().catch((err) => {
     console.error(err);
 });

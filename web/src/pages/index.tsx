@@ -120,10 +120,14 @@ import NextLink from "next/link";
 import { EditDeletePostButtons } from "../components/EditDeletePostButtons";
 import { Layout } from "../components/Layout";
 import { UpdootSection } from "../components/UpdootSection";
-import { usePostsQuery, PostsQuery } from "../generated/graphql";
+import { usePostsQuery } from "../generated/graphql";
+import { useIsAuth } from "../utils/useIsAuth";
 import { withApollo } from "../utils/withApollo";
 
-const Index = () => {
+const Index: React.FC = () => {
+  // const { data: meData } = useMeQuery();
+  useIsAuth();
+
   const { data, error, loading, fetchMore, variables } = usePostsQuery({
     variables: {
       limit: 15,
@@ -144,7 +148,7 @@ const Index = () => {
   return (
     <Layout>
       {!data && loading ? (
-        <div>loading...</div>
+        <div>loading...maybe you need to login?</div>
       ) : (
         <Stack spacing={8}>
           {data!.posts.posts.map((p) =>
@@ -185,26 +189,6 @@ const Index = () => {
                   cursor:
                     data.posts.posts[data.posts.posts.length - 1].createdAt,
                 },
-                // updateQuery: (
-                //   previousValue,
-                //   { fetchMoreResult }
-                // ): PostsQuery => {
-                //   if (!fetchMoreResult) {
-                //     return previousValue as PostsQuery;
-                //   }
-
-                //   return {
-                //     __typename: "Query",
-                //     posts: {
-                //       __typename: "PaginatedPosts",
-                //       hasMore: (fetchMoreResult as PostsQuery).posts.hasMore,
-                //       posts: [
-                //         ...(previousValue as PostsQuery).posts.posts,
-                //         ...(fetchMoreResult as PostsQuery).posts.posts,
-                //       ],
-                //     },
-                //   };
-                // },
               });
             }}
             isLoading={loading}
@@ -220,4 +204,3 @@ const Index = () => {
 };
 
 export default withApollo({ ssr: true })(Index);
-// export default Index;

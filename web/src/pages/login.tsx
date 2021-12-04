@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../components/InputField";
+import { Layout } from "../components/Layout";
 import { Wrapper } from "../components/Wrapper";
 import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
@@ -14,70 +15,78 @@ const Login: React.FC<{}> = ({}) => {
   const [login] = useLoginMutation();
   return (
     // <NavBar></NavBar>
-    <Wrapper variant="small">
-      <Formik
-        initialValues={{ usernameOrEmail: "", password: "" }}
-        onSubmit={async (values, { setErrors }) => {
-          const response = await login({
-            variables: values,
-            update: (cache, { data }) => {
-              cache.writeQuery<MeQuery>({
-                query: MeDocument,
-                data: {
-                  __typename: "Query",
-                  me: data?.login.user,
-                },
-              });
-              cache.evict({ fieldName: "posts:{}" });
-            },
-          });
-          // console.log(response);
-          if (response.data?.login.errors) {
-            [{ field: "username", message: "something wrong" }];
-            setErrors(toErrorMap(response.data.login.errors));
-          } else if (response.data?.login.user) {
-            if (typeof router.query.next === "string") {
-              router.push(router.query.next);
-            } else {
-              router.push("/");
+    <Layout>
+      <Wrapper variant="small">
+        {/* <div>Welcome to NextNote.io! Please sign in: </div>
+         */}
+        <Box textStyle="h2">LOGIN</Box>
+
+        <br />
+        <Formik
+          initialValues={{ usernameOrEmail: "", password: "" }}
+          onSubmit={async (values, { setErrors }) => {
+            const response = await login({
+              variables: values,
+              update: (cache, { data }) => {
+                cache.writeQuery<MeQuery>({
+                  query: MeDocument,
+                  data: {
+                    __typename: "Query",
+                    me: data?.login.user,
+                  },
+                });
+                cache.evict({ fieldName: "posts:{}" });
+              },
+            });
+            // console.log(response);
+            if (response.data?.login.errors) {
+              [{ field: "username", message: "something wrong" }];
+              setErrors(toErrorMap(response.data.login.errors));
+            } else if (response.data?.login.user) {
+              if (typeof router.query.next === "string") {
+                router.push(router.query.next);
+              } else {
+                router.push("/");
+              }
             }
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField
-              name="usernameOrEmail"
-              placeholder="username Or email"
-              label="Username or email"
-            />
-            <Box mt={4}>
+          }}
+        >
+          {({ isSubmitting }) => (
+            <Form>
               <InputField
-                name="password"
-                placeholder="password"
-                label="Password"
-                type="password"
+                name="usernameOrEmail"
+                placeholder="username Or email"
+                label="Username or Email"
               />
-            </Box>
-            <Flex mt={2}>
-              <NextLink href="/forgot-password">
-                <Link ml="auto">Forgot Password?</Link>
-              </NextLink>
-            </Flex>
-            <Button
-              mt={4}
-              type="submit"
-              isLoading={isSubmitting}
-              // variantColor="teal"
-              // colorScheme="black"
-              color="black"
-            >
-              login
-            </Button>
-          </Form>
-        )}
-      </Formik>
-    </Wrapper>
+              <Box mt={4}>
+                <InputField
+                  name="password"
+                  placeholder="password"
+                  label="Password"
+                  type="password"
+                />
+              </Box>
+              {/* <Flex mt={2}>
+                <NextLink href="/forgot-password">
+                  <Link ml="auto">Forgot Password?</Link>
+                </NextLink>
+              </Flex> */}
+              <Button
+                mt={9}
+                type="submit"
+                isLoading={isSubmitting}
+                // variantColor="teal"
+                // colorScheme="black"
+                color="black"
+                colorScheme="blue"
+              >
+                login
+              </Button>
+            </Form>
+          )}
+        </Formik>
+      </Wrapper>
+    </Layout>
   );
 };
 

@@ -11,6 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -58,57 +67,61 @@ let UserResolver = class UserResolver {
         }
         return "";
     }
-    async changePassword(token, newPassword, { redis, req }) {
-        if (newPassword.length <= 2) {
-            return {
-                errors: [
-                    {
-                        field: "newPassword",
-                        message: "length must be greater than 2",
-                    },
-                ],
-            };
-        }
-        const key = constants_1.FORGET_PASSWORD_PREFIX + token;
-        const userId = await redis.get(key);
-        if (!userId) {
-            return {
-                errors: [
-                    {
-                        field: "token",
-                        message: "token expired",
-                    },
-                ],
-            };
-        }
-        const userIdNum = parseInt(userId);
-        const user = await User_1.User.findOne(userIdNum);
-        if (!user) {
-            return {
-                errors: [
-                    {
-                        field: "token",
-                        message: "user no longer exists",
-                    },
-                ],
-            };
-        }
-        await User_1.User.update({ id: userIdNum }, {
-            password: await argon2_1.default.hash(newPassword),
+    changePassword(token, newPassword, { redis, req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (newPassword.length <= 2) {
+                return {
+                    errors: [
+                        {
+                            field: "newPassword",
+                            message: "length must be greater than 2",
+                        },
+                    ],
+                };
+            }
+            const key = constants_1.FORGET_PASSWORD_PREFIX + token;
+            const userId = yield redis.get(key);
+            if (!userId) {
+                return {
+                    errors: [
+                        {
+                            field: "token",
+                            message: "token expired",
+                        },
+                    ],
+                };
+            }
+            const userIdNum = parseInt(userId);
+            const user = yield User_1.User.findOne(userIdNum);
+            if (!user) {
+                return {
+                    errors: [
+                        {
+                            field: "token",
+                            message: "user no longer exists",
+                        },
+                    ],
+                };
+            }
+            yield User_1.User.update({ id: userIdNum }, {
+                password: yield argon2_1.default.hash(newPassword),
+            });
+            yield redis.del(key);
+            req.session.userId = user.id;
+            return { user };
         });
-        await redis.del(key);
-        req.session.userId = user.id;
-        return { user };
     }
-    async forgotPassword(email, { redis }) {
-        const user = await User_1.User.findOne({ where: { email } });
-        if (!user) {
+    forgotPassword(email, { redis }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield User_1.User.findOne({ where: { email } });
+            if (!user) {
+                return true;
+            }
+            const token = (0, uuid_1.v4)();
+            yield redis.set(constants_1.FORGET_PASSWORD_PREFIX + token, user.id, "ex", 1000 * 60 * 60 * 24 * 3);
+            yield (0, sendEmail_1.sendEmail)(email, `<a href="http://localhost:3000/change-password/${token}">reset password</a>`);
             return true;
-        }
-        const token = (0, uuid_1.v4)();
-        await redis.set(constants_1.FORGET_PASSWORD_PREFIX + token, user.id, "ex", 1000 * 60 * 60 * 24 * 3);
-        await (0, sendEmail_1.sendEmail)(email, `<a href="http://localhost:3000/change-password/${token}">reset password</a>`);
-        return true;
+        });
     }
     me({ req }) {
         if (!req.session.userId) {
@@ -116,71 +129,75 @@ let UserResolver = class UserResolver {
         }
         return User_1.User.findOne(req.session.userId);
     }
-    async register(options, { req }) {
-        const errors = (0, validateRegister_1.validateRegister)(options);
-        if (errors) {
-            return { errors };
-        }
-        const hashedPassword = await argon2_1.default.hash(options.password);
-        let user;
-        try {
-            const result = await (0, typeorm_1.getConnection)()
-                .createQueryBuilder()
-                .insert()
-                .into(User_1.User)
-                .values({
-                username: options.username,
-                email: options.email,
-                password: hashedPassword,
-            })
-                .returning("*")
-                .execute();
-            user = result.raw[0];
-        }
-        catch (err) {
-            if (err.code === "23505") {
+    register(options, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, validateRegister_1.validateRegister)(options);
+            if (errors) {
+                return { errors };
+            }
+            const hashedPassword = yield argon2_1.default.hash(options.password);
+            let user;
+            try {
+                const result = yield (0, typeorm_1.getConnection)()
+                    .createQueryBuilder()
+                    .insert()
+                    .into(User_1.User)
+                    .values({
+                    username: options.username,
+                    email: options.email,
+                    password: hashedPassword,
+                })
+                    .returning("*")
+                    .execute();
+                user = result.raw[0];
+            }
+            catch (err) {
+                if (err.code === "23505") {
+                    return {
+                        errors: [
+                            {
+                                field: "username",
+                                message: "username already taken",
+                            },
+                        ],
+                    };
+                }
+            }
+            req.session.userId = user.id;
+            return { user };
+        });
+    }
+    login(usernameOrEmail, password, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield User_1.User.findOne(usernameOrEmail.includes("@")
+                ? { where: { email: usernameOrEmail } }
+                : { where: { username: usernameOrEmail } });
+            if (!user) {
                 return {
                     errors: [
                         {
-                            field: "username",
-                            message: "username already taken",
+                            field: "usernameOrEmail",
+                            message: "that username doesn't exist",
                         },
                     ],
                 };
             }
-        }
-        req.session.userId = user.id;
-        return { user };
-    }
-    async login(usernameOrEmail, password, { req }) {
-        const user = await User_1.User.findOne(usernameOrEmail.includes("@")
-            ? { where: { email: usernameOrEmail } }
-            : { where: { username: usernameOrEmail } });
-        if (!user) {
+            const valid = yield argon2_1.default.verify(user.password, password);
+            if (!valid) {
+                return {
+                    errors: [
+                        {
+                            field: "password",
+                            message: "incorrect password",
+                        },
+                    ],
+                };
+            }
+            req.session.userId = user.id;
             return {
-                errors: [
-                    {
-                        field: "usernameOrEmail",
-                        message: "that username doesn't exist",
-                    },
-                ],
+                user,
             };
-        }
-        const valid = await argon2_1.default.verify(user.password, password);
-        if (!valid) {
-            return {
-                errors: [
-                    {
-                        field: "password",
-                        message: "incorrect password",
-                    },
-                ],
-            };
-        }
-        req.session.userId = user.id;
-        return {
-            user,
-        };
+        });
     }
     logout({ req, res }) {
         return new Promise((resolve) => req.session.destroy((err) => {
