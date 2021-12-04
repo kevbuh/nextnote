@@ -10,7 +10,7 @@ import {
   // Text,
 } from "@chakra-ui/react";
 import React from "react";
-import { Fonts } from "./font";
+// import Fonts from "./font";
 
 const theme = extendTheme({
   fonts: {
@@ -22,7 +22,7 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: any) {
   return (
     <ChakraProvider resetCSS theme={theme}>
-      <Fonts />
+      {/* <Fonts /> */}
       <ColorModeProvider
         options={{
           useSystemColorMode: true,
