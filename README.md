@@ -7,6 +7,11 @@ visit at <a href="https://nextnote.io/" target="https://nextnote.io/">nextnote.i
 Todo
 
 - [] Switch to react native
+- [] Intuitive initial open
+- [] Have desktop and mobile app that integrate and sync together
+- [] Offline capabilities
+- [] Apple pen support for handwritten notes
+- [] Voice notes that get translated to text for you
 - [] Allow for checklist
   - [] Different sized bullet points for urgency
   - [] More organic, like the note is alive
